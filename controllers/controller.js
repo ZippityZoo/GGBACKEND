@@ -69,9 +69,7 @@ async function signUp(req, res, next){
         standing} = req.body;
         if(!first_name || !last_name || !email || !tag ||!password ){
             res.json(first_name);
-            //res.status(400).json({error:'Missing required parameters',received:req.body});
         }
-        //res.json(req.body);
         const newUser = await model.createUser(first_name, last_name, email, tag, password,  account_created,
           standing);
         if (newUser){
@@ -86,7 +84,7 @@ async function signUp(req, res, next){
 }
 async function login(req, res, next){
   try{
-      const {email, tag, password }= req.params;
+      const {email, tag, password } = req.body;
 
       /*
       const email  = "john.doe@example.com";
@@ -94,7 +92,8 @@ async function login(req, res, next){
       const tag = "genog";
       const title = "player";
       */
-      if((!email && !tag )|| !password){
+      //res.send(req.body);
+      if((!email || !tag )|| !password){
         return res.status(400).send('Missing required parameters');
       }
       const user  = await model.loginUser(email,password);
