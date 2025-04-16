@@ -1,11 +1,12 @@
+PRAGMA foreign_keys = ON;
+
 CREATE TABLE IF NOT EXISTS users(
-    user_id INT AUTO_INCREMENT  PRIMARY KEY NOT NULL,
+    user_id INTEGER  PRIMARY KEY AUTOINCREMENT NOT NULL,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    tag VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    tag VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    title TEXT CHECK(title in ('tournament_organizer','player','admin')),
     account_created DATETIME DEFAULT CURRENT_TIMESTAMP,
     standing VARCHAR(255)
 );
@@ -65,3 +66,4 @@ CREATE TABLE IF NOT EXISTS images (
     path TEXT NOT NULL
 );
 
+--title TEXT CHECK(title in ('tournament_organizer','player','admin')),--

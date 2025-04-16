@@ -11,14 +11,21 @@ async function getUser(user_id){
         WHERE u.user_id = ?;`;
     return await db.get(sql,user_id);
 };
-async function createUser(user_id, first_name, last_name, email, tag, password, title){
+async function loginUser(email,password){
+    const sql =`
+    SELECT * FROM users u
+        WHERE u.email = ? AND u.password = ?;`;
+    return await db.get(sql,[email,password]);
+};
+
+async function createUser(first_name, last_name, email, tag, password, account_created, standing){
     const sql = `
-    INSERT INTO users (user_id, first_name, last_name, email, tag, password, title)
+    INSERT INTO users (first_name, last_name, email, tag, password, account_created, standing)
     VALUES(?,?,?,?,?,?,?)
     ON CONFLICT(user_id)
     DO UPDATE SET user_id = excluded.user_id;
-    `
-    return await db.run(sql,[user_id, first_name, last_name, email, tag, password, title]);
+    `;//ON CONFLICT(user_id,email)
+    return await db.run(sql,[first_name, last_name, email, tag, password, account_created, standing]);
 }
 
 async function insertImage(name, filePath) {
@@ -50,7 +57,7 @@ async function getTourneyBrackets(tourney_id){
 }
 async function getBracketAttendies(tourney_id){
     const sql = `
-    SELECT b.game_name, b.type, u.user_id, u.first_name, u.last_name, u.email, u.tag, u.password, u.title, u.account_created, u.standing FROM user_brackets ub
+    SELECT b.game_name, b.type, u.user_id, u.first_name, u.last_name, u.email, u.tag, u.password, u.account_created, u.standing FROM user_brackets ub
     JOIN brackets b ON  ub.bracket_id = b.bracket_id
     JOIN users u ON ub.user_id = u.user_id
     WHERE b.tourney_id = ?;
@@ -64,12 +71,18 @@ async function getBracket(bracket_id){
     `;
     return await db.get(sql,bracket_id);
 }
+async function validateUserLogin(email,password){
+    const sql =`
+    `;
+    return await db.get(sql,email,password);
+}
 
 module.exports = {
     getAllUsers,
     getUser,
     getAllTourneys,
     //insertImage,
+    loginUser,
     createUser,
     getTourney,
     getTourneyBrackets,

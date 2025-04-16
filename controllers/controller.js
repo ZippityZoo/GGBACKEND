@@ -61,15 +61,54 @@ async function getUser(req, res, next) {
 async function generateSeeding(req, res, next){
 
 }
+//hash the password eventually
 async function signUp(req, res, next){
     try{
-        const {user_id, first_name, last_name, email, tag, password, title} = req.body;
-        if(!user_id || !first_name || !last_name || !email || !tag ||!password || !title){
-            return res.status(400).send('Missing required parameters');
+      
+        const {user_id,first_name, last_name, email, tag, password,  account_created,
+        standing} = req.body;
+        if(!first_name || !last_name || !email || !tag ||!password ){
+            res.json(first_name);
+            //res.status(400).json({error:'Missing required parameters',received:req.body});
+        }
+        //res.json(req.body);
+        const newUser = await model.createUser(first_name, last_name, email, tag, password,  account_created,
+          standing);
+        if (newUser){
+          res.send(newUser);
+        }
+        else{
+          res.status(404).send({error: "Error Creating User"});
         }
     }catch(error){
         next(error);
     }
+}
+async function login(req, res, next){
+  try{
+      const {email, tag, password }= req.params;
+
+      /*
+      const email  = "john.doe@example.com";
+      const password = "12345";
+      const tag = "genog";
+      const title = "player";
+      */
+      if((!email && !tag )|| !password){
+        return res.status(400).send('Missing required parameters');
+      }
+      const user  = await model.loginUser(email,password);
+      if (user) {
+        //res.render('login');
+        res.send(user);
+        //res.json(user);
+      }else {
+        //errstring  += user_id;
+        res.status(404).send({ error: "User not found"});
+    } 
+  }catch(error){
+      next(error);
+  }
 }
 //gets all info about tourney
 async function getTourney(req, res, next){
@@ -126,5 +165,7 @@ module.exports = {
     getUser,
     getTourney,
     getTourneyBrackets,
-    getBracket
+    getBracket,
+    signUp,
+    login
 }
